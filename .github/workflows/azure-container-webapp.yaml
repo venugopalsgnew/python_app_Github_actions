@@ -45,5 +45,5 @@ jobs:
         run: |
           az acr create \
             --resource-group python-app-rg \
-            --name pythonappregistry \
+            --name pythonappregistrytestingpurpose \
             --sku Basic
