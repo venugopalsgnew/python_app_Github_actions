@@ -36,14 +36,25 @@ jobs:
         run: |
           az account show
           az account list -o table
+
       - name: Create Resource Group
         run: |
           az group create \
             --name python-app-rg \
             --location eastus
+
       - name: Create Azure container registry
         run: |
           az acr create \
             --resource-group python-app-rg \
             --name pythonappregistrytestingpurpose \
             --sku Basic
+
+      - name: Login to ACR
+        run: |
+          az acr login --name pythonappregistrytestingpurpose
+
+      - name: Tag Docker Image and push to ACR
+        run: |
+          docker tag python_custom_app:latest pythonappregistrytestingpurpose.azurecr.io/python_custom_app:latest
+          docker push pythonappregistrytestingpurpose.azurecr.io/python_custom_app:latest
