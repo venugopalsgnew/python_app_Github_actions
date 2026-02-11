@@ -15,5 +15,10 @@ jobs:
       - name: list files
         run: ls -la
 
-      - name: Check Docker
+      - name: Check Docker version
         run: docker --version
+
+      - name: Docker image build
+        run: |
+          docker build -t python_custom_app:latest .
+          docker images
