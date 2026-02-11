@@ -36,3 +36,8 @@ jobs:
         run: |
           az account show
           az account list -o table
+      - name: Create Resource Group
+        run: |
+          az group create \
+            --name python-app-rg \
+            --location eastus
