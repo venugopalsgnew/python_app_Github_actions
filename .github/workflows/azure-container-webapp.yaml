@@ -56,5 +56,35 @@ jobs:
 
       - name: Tag Docker Image and push to ACR
         run: |
-          docker tag python_custom_app:latest pythonappregistrytestingpurpose.azurecr.io/python_custom_app:latest
-          docker push pythonappregistrytestingpurpose.azurecr.io/python_custom_app:latest
+          docker tag python_custom_app:latest pythonappregistrytestingpurpose.azurecr.io/python_custom_app:${{ github.sha }}
+          docker push pythonappregistrytestingpurpose.azurecr.io/python_custom_app:${{ github.sha }}
+      - name: Create Azure Web App for Containers
+        run: |
+          az webapp create \
+            --resource-group python-app-rg \
+            --plan python-app-service-plan \
+            --name python-container-webapp \
+            --deployment-container-image-name pythonappregistrytestingpurpose.azurecr.io/python_custom_app:${{ github.sha }}
+      - name: Configure Web App to use ACR
+        run: |
+          az webapp config container set \
+            --resource-group python-app-rg \
+            --name python-container-webapp \
+            --docker-custom-image-name pythonappregistrytestingpurpose.azurecr.io/python_custom_app:${{ github.sha }}
+      - name: Restart Web App
+        run: |
+          az webapp restart \
+            --resource-group python-app-rg \
+            --name python-container-webapp
+      - name: Verify Web App Deployment
+        run: |
+          az webapp show \
+            --resource-group python-app-rg \
+            --name python-container-webapp \
+            --query "state"
+      - name: Get Web App URL
+        run: |
+          az webapp show \
+            --resource-group python-app-rg \
+            --name python-container-webapp \
+            --query "defaultHostName" -o tsv
