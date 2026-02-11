@@ -41,3 +41,9 @@ jobs:
           az group create \
             --name python-app-rg \
             --location eastus
+      - name: Create Azure container registry
+        run: |
+          az acr create \
+            --resource-group python-app-rg \
+            --name pythonappregistry \
+            --sku Basic
