@@ -58,13 +58,22 @@ jobs:
         run: |
           docker tag python_custom_app:latest pythonappregistrytestingpurpose.azurecr.io/python_custom_app:${{ github.sha }}
           docker push pythonappregistrytestingpurpose.azurecr.io/python_custom_app:${{ github.sha }}
+
+      - name: Create App Service Plan
+        run: |
+          az appservice plan create \
+            --name python-app-service-plan \
+            --resource-group python-app-rg \
+            --is-linux \
+            --sku B1
       - name: Create Azure Web App for Containers
         run: |
           az webapp create \
             --resource-group python-app-rg \
             --plan python-app-service-plan \
             --name python-container-webapp \
-            --deployment-container-image-name pythonappregistrytestingpurpose.azurecr.io/python_custom_app:${{ github.sha }}
+            --runtime "PYTHON|3.10"
+
       - name: Configure Web App to use ACR
         run: |
           az webapp config container set \
